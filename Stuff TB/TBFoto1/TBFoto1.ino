@@ -24,6 +24,8 @@ void setup()
    
   pinMode(pin_out_magnet,OUTPUT);
   pinMode(pin_out_flash,OUTPUT);
+  pinMode(pin_out_camera,OUTPUT);
+  
 }  
 
 void waitForEnter() {
@@ -74,6 +76,12 @@ void myDelay(int ms) {
 } // myDelay
   
 void delayAfterFiring(int firing_duration, int delay_duration) {
+  int d=delay_duration-firing_duration;
+  if (d>0) {
+    myDelay(d);
+  } else {
+    Serial.println("*** couldn't delay after firing, duration larger than delay");
+  }
 }
 
 void fireRelay(int pin, char *what, int duration) {
