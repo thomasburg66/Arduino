@@ -24,17 +24,6 @@ void loop ();
 void noteOn(byte cmd, byte note, byte velocity);
 char button(char button_num);
 
-byte note;
-byte velocity;
-int pot;
-
-byte byte1;
-byte byte2;
-byte byte3;
-
-
-int action=2; //0 =note off ; 1=note on ; 2= nada
-
 //setup: declaring iputs and outputs and begin serial
 void setup() {
 
@@ -72,8 +61,8 @@ void setup() {
 //loop: wait for serial data, and interpret the message
 void loop () {
 
-  pot = analogRead(1);
-  note = pot/8;  // convert value to value 0-127
+  int pot = analogRead(1);
+  byte note = pot/8;  // convert value to value 0-127
   if(button(BUTTON1) || button(BUTTON2) || button(BUTTON3))
   {
     
