@@ -65,9 +65,9 @@ Advanced Math yields:
 
 U=a * 5 / 1023
 
-v= (U - 1) * 3 / 127
+v= (U - 1) * 127 / 3
 
-v= (5 * a / 1023 - 1) * 3 / 127
+v= (5 * a / 1023 - 1) * 127 /3
 
 */
 byte voltageToAftertouchvalue(int analog_read) {
