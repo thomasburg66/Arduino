@@ -53,18 +53,54 @@ void setup() {
   //Serial.println("MIDI Board");  
 }
 
+// scale from voltage 1 .. 4 V to aftertouch of 0 .. 127
+// Arduino will map input voltages between 0 and 5 volts into integer values between 0 and 1023.
+/*
+
+- let's call the voltage U
+- let's call the reading or the analog port a
+- let's call the aftertouchvalue v
+
+Advanced Math yields:
+
+U=a * 5 / 1023
+
+v= (U - 1) * 3 / 127
+
+v= (5 * a / 1023 - 1) * 3 / 127
+
+*/
+byte voltageToAftertouchvalue(int analog_read) {
+  float a,v;
+  a=analog_read;
+ 
+  v=(5.0 * a / 1023.0 - 1.0) * 127.0 / 3.0;
+
+  if (v<0) return 0;
+  if (v>127) return 127;
+  byte result=v;
+  return v;  
+}
+
+int aftertouch_old=-1;
+int aftertouch_sensitivity=2;
+
 //loop: wait for serial data, and interpret the message
 void loop () {
 
+  // need to connect the output of the organ pedal to Analog 4
+  // for testing, use Analog 1 which is the potentiometer
   int pot = analogRead(1);
-  byte note = pot/8;  // convert value to value 0-127
-  if(button(BUTTON1) || button(BUTTON2) || button(BUTTON3))
-  {
-    
-    channelAftertouch(15,note);
-    digitalWrite(STAT2,LOW);
-    while(button(BUTTON1) || button(BUTTON2) || button(BUTTON3));
-  }
+  
+  // we read a value from 0 ... 127 representing 0 ... 5 V
+  // however, we have measured the minimum value to be 1 V and the maximum value to be 4 V
+  // therefore we scale this
+  byte aftertouch=voltageToAftertouchvalue(pot);
+ 
+  if ( abs(aftertouch - aftertouch_old) >= aftertouch_sensitivity) {
+    channelAftertouch(15,aftertouch);
+    aftertouch_old=aftertouch;
+  } 
 }
 
 /*
