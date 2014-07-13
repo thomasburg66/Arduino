@@ -19,11 +19,6 @@
 #define STAT1  7
 #define STAT2  6
 
-void setup();
-void loop ();
-void noteOn(byte cmd, byte note, byte velocity);
-char button(char button_num);
-
 //setup: declaring iputs and outputs and begin serial
 void setup() {
 
@@ -66,7 +61,7 @@ void loop () {
   if(button(BUTTON1) || button(BUTTON2) || button(BUTTON3))
   {
     
-    noteOn(0x95,note,0x45);
+    channelAftertouch(15,note);
     digitalWrite(STAT2,LOW);
     while(button(BUTTON1) || button(BUTTON2) || button(BUTTON3));
   }
@@ -104,7 +99,7 @@ Byte 1: vv
 */
 
 void channelAftertouch(byte channel, byte value) {
-   byte cmd=0xD0 + channel;
+   byte cmd=0xD0 + channel - 1;
    Serial.write(cmd);
    Serial.write(value);
 }
