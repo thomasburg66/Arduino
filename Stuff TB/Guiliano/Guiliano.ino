@@ -15,7 +15,6 @@
 #define BUTTON3  4
 
 
-
 #define STAT1  7
 #define STAT2  6
 
@@ -48,8 +47,8 @@ void setup() {
   digitalWrite(STAT2,HIGH);
  
  //start serial with midi baudrate 31250 or 38400 for debugging
- Serial.begin(31250);     
-  //Serial.begin(38400); 
+  Serial.begin(31250);     
+//  Serial.begin(38400); 
   //Serial.println("MIDI Board");  
 }
 
@@ -82,25 +81,42 @@ byte voltageToAftertouchvalue(int analog_read) {
   return v;  
 }
 
-int aftertouch_old=-1;
-int aftertouch_sensitivity=2;
+int debug=0;
+
+int aftertouch_old=1000;
 
 //loop: wait for serial data, and interpret the message
 void loop () {
 
   // need to connect the output of the organ pedal to Analog 4
   // for testing, use Analog 1 which is the potentiometer
-  int pot = analogRead(1);
+  int pot_pedal = analogRead(0);
+  int pot_knob = analogRead(1);
+
+  int aftertouch_sensitivity=pot_knob/8;
   
   // we read a value from 0 ... 127 representing 0 ... 5 V
   // however, we have measured the minimum value to be 1 V and the maximum value to be 4 V
   // therefore we scale this
-  byte aftertouch=voltageToAftertouchvalue(pot);
+  byte aftertouch=pot_pedal / 8; // voltageToAftertouchvalue(pot);
+
+  if (debug) {
+    Serial.print("pot_pedal ");
+    Serial.println(pot_pedal);
+  }
+  
  
   if ( abs(aftertouch - aftertouch_old) >= aftertouch_sensitivity) {
-    channelAftertouch(15,aftertouch);
+    if (debug) {
+      Serial.print("new aftertouch ");
+      Serial.println(aftertouch);
+    } else {
+      channelAftertouch(15,aftertouch);
+    }
     aftertouch_old=aftertouch;
   } 
+  
+  //  delay(100);
 }
 
 /*
